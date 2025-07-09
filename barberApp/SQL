@@ -1,0 +1,50 @@
+-- 1) Create the database (if it doesn't already exist) and switch to it
+CREATE DATABASE IF NOT EXISTS `barber_app_db`
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+USE `barber_app_db`;
+
+-- 2) users table
+CREATE TABLE `users` (
+  `id`            INT(11) NOT NULL AUTO_INCREMENT,
+  `full_name`     VARCHAR(100) NOT NULL,
+  `email`         VARCHAR(100) NOT NULL,
+  `mobile`        VARCHAR(15)  NOT NULL,
+  `password`      VARCHAR(255) NOT NULL,
+  `profile_image` VARCHAR(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uq_users_email`  (`email`),
+  UNIQUE KEY `uq_users_mobile` (`mobile`)
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;
+
+-- 3) bookings table
+CREATE TABLE `bookings` (
+  `id`           INT(11) NOT NULL AUTO_INCREMENT,
+  `mobile`       VARCHAR(20) NOT NULL,
+  `booking_date` DATE         NOT NULL,
+  `booking_time` TIME         NOT NULL,
+  `created_at`   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `idx_bookings_mobile` (`mobile`)
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;
+
+-- 4) booking_services table
+CREATE TABLE `booking_services` (
+  `id`           INT(11)      NOT NULL AUTO_INCREMENT,
+  `booking_id`   INT(11)      NOT NULL,
+  `service_name` VARCHAR(100) NOT NULL,
+  `price`        DECIMAL(10,2) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_bs_booking_id` (`booking_id`),
+  CONSTRAINT `fk_bs_to_bookings`
+    FOREIGN KEY (`booking_id`)
+    REFERENCES `bookings` (`id`)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+) ENGINE=InnoDB
+  DEFAULT CHARSET=utf8mb4
+  COLLATE=utf8mb4_unicode_ci;
